@@ -1,0 +1,48 @@
+% max(FV.vertices) = [5 5 5];
+% size(I) = [64 64 64];
+clear all, close all, clc
+load SphereMesh.mat
+load dataseg
+eval_im = feat;
+
+%COORDINATES: Note that FV.vertices correspond to x coordinate, so it
+%corresponds to the second dimension of the matrix (size(eval_im,2))
+
+sp_rad = [0.2 0.35 0.35].*size(eval_im);
+
+FV.vertices = FV.vertices/5; % Radius = 1
+FV.vertices(:,1) = FV.vertices(:,1)*sp_rad(2);
+FV.vertices(:,2) = FV.vertices(:,2)*sp_rad(1);
+FV.vertices(:,3) = FV.vertices(:,3)*sp_rad(3);
+
+FV.vertices(:,1) = FV.vertices(:,1) + 1.2*round(size(eval_im,2)/2);
+FV.vertices(:,2) = FV.vertices(:,2) + 1.1*round(size(eval_im,1)/2);
+FV.vertices(:,3) = FV.vertices(:,3) + 1.2*round(size(eval_im,3)/2);
+
+% VISUALIZATION
+% visualize_snake3d_liver_ag(eval_im,FV)
+
+% SEGMENTATION
+I = eval_im;
+Options=struct;
+Options.Verbose=0;
+Options.Wedge=-3;
+Options.Wline=-1;
+Options.Alpha=0.1;
+Options.Beta=0.1;
+Options.Kappa=4;
+Options.Delta=0.09;
+Options.Gamma=0.1000; % Time step, default 1
+Options.Iterations=20;
+Options.Sigma1=2;
+Options.Sigma2=2;
+Options.Lambda=0.8; %Weight which changes the direction of the image potential force to the direction of the surface normal, value default 0.8 (range [0..1]) (Keeps the surface from self intersecting)
+FV.vertices(:,1)=FV.vertices(:,1)+35;
+FV.vertices(:,2)=FV.vertices(:,2)+25;
+FV.vertices(:,3)=FV.vertices(:,3)+20;
+OV=Snake3D(I,FV,Options);
+
+   
+% VISUALIZATION
+visualize_snake3d_liver_ag(eval_im,OV)
+    
